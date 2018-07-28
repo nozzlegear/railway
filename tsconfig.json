@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "module": "commonjs",
+        "lib": ["es2015.promise", "es5", "dom"],
+        "declaration": true,
+        "sourceMap": true,
+        "downlevelIteration": true,
+        "strict": true /* Enable all strict type-checking options. */,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "esModuleInterop": true,
+        "outDir": "./lib"
+    },
+    "include": ["src/**/*.ts"],
+    "exclude": ["src/**/*.spec.ts"]
+}

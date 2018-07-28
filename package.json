@@ -1,0 +1,50 @@
+{
+    "name": "@nozzlegear/railway",
+    "version": "1.0.0",
+    "description": "Functional helpers, heavily inspired by F#, to help facilitate \"railway oriented\" programming.",
+    "main": "lib/index.js",
+    "repository": "https://github.com/nozzlegear/railway",
+    "author": "Joshua Harms <joshua@nozzlegear.com>",
+    "license": "MIT",
+    "private": false,
+    "devDependencies": {
+        "@types/jest": "^23.3.1",
+        "barrelsby": "^1.0.2",
+        "jest": "^23.4.2",
+        "rimraf": "^2.6.2",
+        "ts-jest": "^23.0.1",
+        "typescript": "^2.9.2"
+    },
+    "scripts": {
+        "clean": "rimraf ./lib",
+        "barrel": "barrelsby -e \".*\\.spec\\.(t|j)sx?$\" -d ./src --delete",
+        "build": "yarn barrelsby && yarn clean && tsc -p .",
+        "test": "yarn jest",
+        "prepublishOnly": "yarn build && yarn test"
+    },
+    "files": [
+        "lib",
+        "README.md"
+    ],
+    "jest": {
+        "testEnvironment": "node",
+        "transform": {
+            "^.+\\.tsx?$": "ts-jest"
+        },
+        "testRegex": "src/.*\\.spec\\.(t|j)sx?$",
+        "moduleFileExtensions": [
+            "ts",
+            "tsx",
+            "js",
+            "jsx",
+            "json"
+        ],
+        "testPathIgnorePatterns": [
+            "/node_modules/",
+            "/\\./"
+        ],
+        "watchPathIgnorePatterns": [
+            "<rootDir>/node_modules/"
+        ]
+    }
+}
