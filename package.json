@@ -1,6 +1,6 @@
 {
     "name": "@nozzlegear/railway",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "description": "Functional helpers, heavily inspired by F#, to help facilitate \"railway oriented\" programming.",
     "main": "lib/index.js",
     "typings": "lib/index.d.ts",
