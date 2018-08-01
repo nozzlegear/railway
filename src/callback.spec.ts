@@ -49,4 +49,22 @@ describe("Callback", () => {
     it("should short circuit once any chain returns a value", () => {});
 
     it("should short circuit once any chain returns an error", () => {});
+
+    it("should allow each function to continue executing but go to the next chain once next is called", () => {
+        // The idea behind this is router functions that might want to return a response to the client early, but still continue background processing afteward
+        Callback.withValue(5)
+            .chain((arg, next) => {
+                something();
+
+                // Return a response early and let the Callback continue down the chain, but continue executing in this function
+                // (Although JS is single-threaded so this function wouldn't actually "continue" at the same time, rather after all nexts have been called and response sent to client)
+                next();
+
+                doSomethingElse();
+            })
+            .chain((arg, next) => something())
+            .execute();
+    });
+
+    it("should never finish executing if a function doesn't call next", () => {});
 });
