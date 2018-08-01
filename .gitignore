@@ -74,3 +74,6 @@ typings/
 
 # Built files
 lib
+
+# Not sure what's doing it, but something is creating an index.ts file that exports *literally* everything, including node modules
+index.ts
