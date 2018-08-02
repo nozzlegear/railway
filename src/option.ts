@@ -101,7 +101,7 @@ export class Option<T> {
     /**
      * Creates an option with no value.
      */
-    static ofNone<T>() {
+    static ofNone<T = never>() {
         return new Option<T>();
     }
 
