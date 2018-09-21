@@ -59,10 +59,12 @@ export class Option<T> {
     /**
      * Passes the value to the given @param fn function where it can the be used for operations that don't require a value to be returned.
      */
-    iter(fn: (arg: T) => void): void {
+    iter(fn: (arg: T) => void): Option<T> {
         if (_isSome(this.value)) {
             fn(this.value);
         }
+
+        return this;
     }
 
     /**
@@ -143,7 +145,7 @@ export class Option<T> {
     /**
      * Returns a curried function that will pass the value to the given @param fn function where it can the be used for operations that don't require a value to be returned.
      */
-    static iter<T>(fn: (arg: T) => void): Curried<T, void> {
+    static iter<T>(fn: (arg: T) => Option<T>): Curried<T, Option<T>> {
         return option => option.iter(fn);
     }
 

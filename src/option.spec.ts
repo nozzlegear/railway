@@ -72,6 +72,16 @@ describe("Option", () => {
             expect(fn).not.toBeCalled();
         });
 
+        it("should iter and return the same option", () => {
+            const fn = jest.fn();
+            const value = Option.ofSome(5)
+                .iter(fn)
+                .map(x => x + 1);
+
+            expect(fn).toBeCalled();
+            expect(value.get()).toBe(6);
+        });
+
         it("should return original value", () => {
             const option = Option.ofSome(5).defaultValue(10);
 
@@ -164,6 +174,16 @@ describe("Option", () => {
             curried(option);
 
             expect(fn).not.toBeCalled();
+        });
+
+        it("should iter and return the same option", () => {
+            const fn = jest.fn();
+            const option = Option.ofSome(5);
+            const curried = Option.iter<number>(fn);
+            const value = curried(option).map(x => x + 1);
+
+            expect(fn).toBeCalled();
+            expect(value.get()).toBe(6);
         });
 
         it("should return original value", () => {
