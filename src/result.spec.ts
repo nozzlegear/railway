@@ -134,12 +134,30 @@ describe("result", () => {
         expect(Result.isOk(output)).toBe(true);
     });
 
-    it("should map an error", () => {
+    it("should not map an error", () => {
         const input = Result.ofError<string>(new Error("Test error"));
         const output = input.map(parseInt);
 
         expect(Result.isError(output)).toBe(true);
         expect(Result.isOk(output)).toBe(false);
+    });
+
+    describe(".wrapError", () => {
+        it("should map an error back to an OK value", () => {
+            const result = Result.ofError<string>(new Error("Test error")).mapError(err => {
+                return err instanceof Error ? err.message : "Unknown object " + err;
+            });
+
+            expect(result.isOk()).toBe(true);
+            expect(result.getValue()).toBe("Test error");
+        });
+
+        it("should not map an error when value is OK", () => {
+            const result = Result.ofValue(5).mapError(err => 10);
+
+            expect(result.isOk()).toBe(true);
+            expect(result.getValue()).toBe(5);
+        });
     });
 
     it("should return original value when ok", () => {

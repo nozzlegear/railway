@@ -72,6 +72,17 @@ export class Result<T> {
     }
 
     /**
+     * Maps the Error value back to an OK value. Will only run if the value is Error.
+     */
+    mapError(mapper: (arg: unknown) => T): Result<T> {
+        if (valueIsError(this.value)) {
+            return Result.ofValue(mapper(this.value));
+        }
+
+        return this;
+    }
+
+    /**
      * Binds the value to the result returned by the @param mapper function. Will only run if the value is Ok.
      */
     bind<U>(mapper: (arg: T) => Result<U>): Result<U> {
@@ -214,6 +225,13 @@ export class Result<T> {
      */
     static map<T, U>(mapper: (arg: T) => U): Curried<T, Result<U>> {
         return r => r.map(mapper);
+    }
+
+    /**
+     * Returns a curried function that will map the Error value back to an OK value. Will only run if the value is Error.
+     */
+    static mapError<T>(mapper: (arg: unknown) => T): Curried<T, Result<T>> {
+        return r => r.mapError(mapper);
     }
 
     /**
