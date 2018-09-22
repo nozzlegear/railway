@@ -56,30 +56,46 @@ describe("Option", () => {
             expect(fn).not.toBeCalled();
         });
 
-        it("should iter", () => {
-            const fn = jest.fn();
+        describe(".iter", () => {
+            it("should iter", () => {
+                const fn = jest.fn();
 
-            Option.ofSome(5).iter(fn);
+                Option.ofSome(5).iter(fn);
 
-            expect(fn).toBeCalled();
-        });
+                expect(fn).toBeCalled();
+            });
 
-        it("should not iter when Option.isNone", () => {
-            const fn = jest.fn();
+            it("should not iter when Option.isNone", () => {
+                const fn = jest.fn();
 
-            Option.ofNone<number>().iter(fn);
+                Option.ofNone<number>().iter(fn);
 
-            expect(fn).not.toBeCalled();
-        });
+                expect(fn).not.toBeCalled();
+            });
 
-        it("should iter and return the same option", () => {
-            const fn = jest.fn();
-            const value = Option.ofSome(5)
-                .iter(fn)
-                .map(x => x + 1);
+            it("should iter and return the same option for further chaining", () => {
+                const fn = jest.fn();
+                const value = Option.ofSome(5)
+                    .iter(fn)
+                    .map(x => x + 1);
 
-            expect(fn).toBeCalled();
-            expect(value.get()).toBe(6);
+                expect(fn).toBeCalled();
+                expect(value.get()).toBe(6);
+            });
+
+            it("should not modify the value despite valiant attempts", async () => {
+                const fn = jest.fn((value: number) => {
+                    value = 21;
+
+                    return 32;
+                });
+                const value = Option.ofSome(5)
+                    .iter(fn)
+                    .map(x => x + 1);
+
+                expect(fn).toBeCalled();
+                expect(value.get()).toBe(6);
+            });
         });
 
         it("should return original value", () => {
