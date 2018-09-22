@@ -30,8 +30,16 @@ export class Async<T> {
     /**
      * Passes the value to the given @param fn function where it can then be used for work that doesn't require returning a value.
      */
-    iter(fn: (arg: T) => void): Promise<void> {
-        return this.value.then(fn);
+    iter(fn: (arg: T) => void): Async<T> {
+        const that: Async<T> = this;
+
+        return Async.ofPromise<T>(
+            that.value.then(arg => {
+                fn(arg);
+
+                return arg;
+            })
+        );
     }
 
     /**
@@ -72,7 +80,7 @@ export class Async<T> {
     /**
      * Returns a curried function that will pass the value to the given @param fn function where it can then be used for work that doesn't require returning a value.
      */
-    static iter<T>(fn: (arg: T) => void): Curried<T, Promise<void>> {
+    static iter<T>(fn: (arg: T) => void): Curried<T, Async<T>> {
         return a => a.iter(fn);
     }
 }

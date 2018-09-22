@@ -97,6 +97,32 @@ describe("Async", () => {
 
             expect(fn).toBeCalledWith("5");
         });
+
+        it("should return itself for further chaining", async () => {
+            const fn = jest.fn();
+            const result = await Async.wrap("5")
+                .iter(fn)
+                .map(parseInt)
+                .get();
+
+            expect(fn).toBeCalledWith("5");
+            expect(result).toBe(5);
+        });
+
+        it("should not modify the value despite valiant attempts", async () => {
+            const fn = jest.fn((value: string) => {
+                value = "shwoop";
+
+                return "asdf";
+            });
+            const result = await Async.wrap("5")
+                .iter(fn)
+                .map(parseInt)
+                .get();
+
+            expect(fn).toBeCalledWith("5");
+            expect(result).toBe(5);
+        });
     });
 
     it("should chain methods together", async () => {
