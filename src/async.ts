@@ -1,3 +1,5 @@
+import { Result } from ".";
+
 type Curried<T, U> = (a: Async<T>) => U;
 
 /**
@@ -11,6 +13,13 @@ export class Async<T> {
      */
     get(): Promise<T> {
         return this.value;
+    }
+
+    /**
+     * Gets the underlying promise, wrapped in a Result. This is just a shortcut for `Result.ofPromise(Async.get())`
+     */
+    getResult(): Promise<Result<T>> {
+        return Result.ofPromise(this.value);
     }
 
     /**
@@ -55,6 +64,13 @@ export class Async<T> {
      */
     static get<T>(a: Async<T>): Promise<T> {
         return a.get();
+    }
+
+    /**
+     * Gets the underlying promise, wrapped in a Result. This is just a shortcut for `Result.ofPromise(Async.get())`
+     */
+    static getResult<T>(a: Async<T>): Promise<Result<T>> {
+        return a.getResult();
     }
 
     /**

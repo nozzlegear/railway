@@ -1,4 +1,4 @@
-import { Async, pipe } from "./";
+import { Async, pipe, Result } from "./";
 
 describe("Async", () => {
     describe("basics", () => {
@@ -21,6 +21,21 @@ describe("Async", () => {
 
             expect(a.get()).toBeInstanceOf(Promise);
             expect(Async.get(a)).toBeInstanceOf(Promise);
+        });
+
+        it(".getResult should return return a Result", async () => {
+            const rejectPromise: () => Promise<number> = async () => {
+                throw new Error("Test error");
+            };
+
+            const a = await Async.wrap(5).getResult();
+            const b = await Async.ofPromise(rejectPromise()).getResult();
+
+            expect(a).toBeInstanceOf(Result);
+            expect(a.isOk()).toBe(true);
+            expect(b).toBeInstanceOf(Result);
+            expect(b.isError()).toBe(true);
+            expect(b.getError().message).toBe("Test error");
         });
     });
 
