@@ -254,11 +254,4 @@ export class Result<T> {
     static iterError<T>(fn: (arg: Error) => void): Curried<T, Result<T>> {
         return r => r.iterError(fn);
     }
-
-    /**
-     * Returns a curried function that will return the @param defaultValue if the Result is Error, else returns the Ok value.
-     */
-    static defaultValue<T>(defaultValue: T): Curried<T, T> {
-        return r => r.defaultValue(defaultValue);
-    }
 }

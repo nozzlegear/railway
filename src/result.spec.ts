@@ -316,11 +316,4 @@ describe("result", () => {
         expect(fn).toBeCalled();
         expect(value).toBe(5);
     });
-
-    it("should curry Result.defaultValue", () => {
-        const result = Result.ofError<string>(new Error("Test error"));
-        const curried = Result.defaultValue<string>("Default value");
-
-        expect(curried(result)).toBe("Default value");
-    });
 });
