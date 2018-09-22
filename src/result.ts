@@ -94,6 +94,17 @@ export class Result<T> {
     }
 
     /**
+     * Executes the given @param fn function when the result is Error.
+     */
+    iterError(fn: (arg: Error) => void): Result<T> {
+        if (valueIsError(this.value)) {
+            fn(this.value);
+        }
+
+        return this;
+    }
+
+    /**
      * Returns the @param defaultValue if the Result is Error, else returns the Ok value.
      * @example
      * console.log(Result.ofValue(5).defaultValue(10)) // 5
@@ -213,6 +224,13 @@ export class Result<T> {
      */
     static iter<T>(fn: (arg: T) => void): Curried<T, Result<T>> {
         return r => r.iter(fn);
+    }
+
+    /**
+     * Returns a curried function that will execute the given @param fn function when the result is Error.
+     */
+    static iterError<T>(fn: (arg: Error) => void): Curried<T, Result<T>> {
+        return r => r.iterError(fn);
     }
 
     /**

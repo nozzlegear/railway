@@ -212,6 +212,45 @@ describe("result", () => {
         expect(value).toBe(10);
     });
 
+    describe(".iterError", () => {
+        it("should execute the iterError function when there's an error", () => {
+            const fn = jest.fn();
+            const result = Result.ofError(new Error("Test error"));
+
+            result.iterError(fn);
+
+            expect(fn).toBeCalled();
+        });
+
+        it("should execute the iterError function and return itself for further chaining", () => {
+            const fn = jest.fn();
+            const result = Result.ofError<number>(new Error("Test error"));
+            const value = result.iterError(fn).defaultValue(5);
+
+            expect(fn).toBeCalled();
+            expect(value).toBe(5);
+        });
+
+        it("should not execute the iterError function when Result is a value", () => {
+            const fn = jest.fn();
+            const result = Result.ofValue(5);
+
+            result.iterError(fn);
+
+            expect(fn).not.toBeCalled();
+            expect(result.getValue()).toBe(5);
+        });
+
+        it("should curry", () => {
+            const fn = jest.fn();
+            const curried = Result.iterError(fn);
+
+            curried(Result.ofError(new Error("Test error")));
+
+            expect(fn).toBeCalled();
+        });
+    });
+
     it("should curry Result.map", () => {
         const result = Result.ofValue("5");
         const curried = Result.map<string, number>(parseInt);
