@@ -1,3 +1,5 @@
+import { Result } from ".";
+
 export class AsyncResult<T> {
     constructor(private value: Promise<T>) {}
 
