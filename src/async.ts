@@ -31,15 +31,9 @@ export class Async<T> {
      * Passes the value to the given @param fn function where it can then be used for work that doesn't require returning a value.
      */
     iter(fn: (arg: T) => void): Async<T> {
-        const that: Async<T> = this;
+        this.value.then(fn);
 
-        return Async.ofPromise<T>(
-            that.value.then(arg => {
-                fn(arg);
-
-                return arg;
-            })
-        );
+        return this;
     }
 
     /**
