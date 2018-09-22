@@ -98,6 +98,24 @@ describe("Option", () => {
             });
         });
 
+        describe(".iterNone", () => {
+            it("should execute when option is none", () => {
+                const fn = jest.fn();
+
+                Option.ofNone().iterNone(fn);
+
+                expect(fn).toBeCalled();
+            });
+
+            it("should not execute when option is some", () => {
+                const fn = jest.fn();
+
+                Option.ofSome(5).iterNone(fn);
+
+                expect(fn).not.toBeCalled();
+            });
+        });
+
         it("should return original value", () => {
             const option = Option.ofSome(5).defaultValue(10);
 
@@ -173,7 +191,7 @@ describe("Option", () => {
         });
 
         it("should iter", () => {
-            const fn = jest.fn();
+            const fn = jest.fn(arg => {});
             const option = Option.ofSome("5");
             const curried = Option.iter<string>(fn);
 

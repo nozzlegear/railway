@@ -68,6 +68,17 @@ export class Option<T> {
     }
 
     /**
+     * Executes the given @param fn function when the the option has no value.
+     */
+    iterNone(fn: () => void): Option<T> {
+        if (_isNone(this.value)) {
+            fn();
+        }
+
+        return this;
+    }
+
+    /**
      * Returns the @param defaultValue if the option is none, else returns the option's value.
      */
     defaultValue(defaultValue: T): T {
@@ -147,6 +158,13 @@ export class Option<T> {
      */
     static iter<T>(fn: (arg: T) => Option<T>): Curried<T, Option<T>> {
         return option => option.iter(fn);
+    }
+
+    /**
+     * Returns a curried function that executes the given @param fn function when the the option has no value.
+     */
+    static iterNone<T>(fn: () => void): Curried<T, Option<T>> {
+        return option => option.iterNone(fn);
     }
 
     /**
