@@ -1,30 +1,34 @@
 import { Result } from ".";
 
 export class AsyncResult<T> {
-    constructor(private value: Promise<T>) {}
+    constructor(private value: Promise<Result<T>>) {}
 
     get(): Promise<Result<T>> {
-        return Result.ofPromise(this.value);
+        return this.value;
     }
 
     map<U>(fn: (arg: T) => U): AsyncResult<U> {
-        return AsyncResult.ofPromise(this.value.then(fn));
+        return AsyncResult.ofPromise(this.value.then(Result.map(fn)));
     }
 
     mapError(fn: (arg: unknown) => T): AsyncResult<T> {
-        return AsyncResult.ofPromise(
-            this.get().then(async result => {
-                if (result.isError()) {
-                    return fn(result.getError());
-                }
-
-                return result.getValue();
-            })
-        );
+        return AsyncResult.ofPromise(this.get().then(Result.mapError(fn)));
     }
 
     bind<U>(fn: (arg: T) => AsyncResult<U>): AsyncResult<U> {
-        return AsyncResult.ofPromise<U>(this.value.then(fn).then(r => r.value));
+        return AsyncResult.ofPromise<U>(
+            this.get()
+                .then(async result => {
+                    if (result.isOk()) {
+                        const value = fn(result.getValue());
+
+                        return value;
+                    }
+
+                    return AsyncResult.wrap<U>(Result.ofError(result.getError()));
+                })
+                .then(AsyncResult.get)
+        );
     }
 
     bindError(fn: (arg: unknown) => AsyncResult<T>): AsyncResult<T> {
@@ -32,12 +36,12 @@ export class AsyncResult<T> {
             this.get()
                 .then(async result => {
                     if (result.isError()) {
-                        return fn(result);
+                        return fn(result.getError());
                     }
 
                     return AsyncResult.wrap(result.getValue());
                 })
-                .then(r => r.value)
+                .then(AsyncResult.get)
         );
     }
 
@@ -56,15 +60,19 @@ export class AsyncResult<T> {
     /**
      * Creates an AsyncResult monad from the promise.
      */
-    static ofPromise<T>(promise: Promise<T>): AsyncResult<T> {
+    static ofPromise<T>(promise: Promise<Result<T>>): AsyncResult<T> {
         return new AsyncResult(promise);
     }
 
     /**
      * Wraps a non-promise value in an AsyncResult monad.
      */
-    static wrap<T>(value: T): AsyncResult<T> {
-        return AsyncResult.ofPromise(Promise.resolve(value));
+    static wrap<T>(value: T | Result<T>): AsyncResult<T> {
+        if (value instanceof Result) {
+            return AsyncResult.ofPromise(Promise.resolve(value));
+        }
+
+        return AsyncResult.ofPromise(Result.ofPromise(Promise.resolve(value)));
     }
 
     /**
