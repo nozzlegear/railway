@@ -19,7 +19,7 @@
     "scripts": {
         "clean": "rimraf ./lib",
         "barrel": "barrelsby -e \".*\\.spec\\.(t|j)sx?$\" -d ./src --delete",
-        "build": "yarn barrelsby && yarn clean && tsc -p .",
+        "build": "yarn barrel && yarn clean && tsc -p .",
         "test": "yarn jest",
         "prepublishOnly": "yarn build && yarn test"
     },
