@@ -109,8 +109,7 @@ describe("result", () => {
     });
 
     it("Should wrap a function that returns an error promise", async () => {
-        const generatePromise = () =>
-            new Promise(rej => setTimeout(() => rej(new Error("Test Error")), 1000));
+        const generatePromise = () => new Promise(rej => setTimeout(() => rej(new Error("Test Error")), 1000));
         const result = await Result.ofPromise(generatePromise);
 
         expect(Result.isError(result)).toBe(true);
@@ -185,6 +184,34 @@ describe("result", () => {
         expect(iterFn1).not.toBeCalled();
     });
 
+    it("should execute the iter function and return itself for further chaining", () => {
+        const result = Result.ofValue(5);
+        const fn = jest.fn();
+        const value = result
+            .iter(fn)
+            .map(arg => arg + 5)
+            .getValue();
+
+        expect(fn).toBeCalledWith(5);
+        expect(value).toBe(10);
+    });
+
+    it("should execute the iter function and not modify the value despite valiant attempts", () => {
+        const result = Result.ofValue(5);
+        const fn = jest.fn(arg => {
+            arg + 20;
+
+            return 37;
+        });
+        const value = result
+            .iter(fn)
+            .map(arg => arg + 5)
+            .getValue();
+
+        expect(fn).toBeCalledWith(5);
+        expect(value).toBe(10);
+    });
+
     it("should curry Result.map", () => {
         const result = Result.ofValue("5");
         const curried = Result.map<string, number>(parseInt);
@@ -209,6 +236,18 @@ describe("result", () => {
         curried(result);
 
         expect(fn).toBeCalled();
+    });
+
+    it("should curry Result.iter and return a Result for further operations", () => {
+        const result = Result.ofValue("5");
+        const fn = jest.fn();
+        const curried = Result.iter<string>(fn);
+        const value = curried(result)
+            .map(parseInt)
+            .getValue();
+
+        expect(fn).toBeCalled();
+        expect(value).toBe(5);
     });
 
     it("should curry Result.defaultValue", () => {

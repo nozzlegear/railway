@@ -85,10 +85,12 @@ export class Result<T> {
     /**
      * Passes the value to the given @param fn function where it can then be used for work that doesn't return a value. Will only run if the value is Ok.
      */
-    iter(fn: (arg: T) => void): void {
+    iter(fn: (arg: T) => void): Result<T> {
         if (valueIsOk(this.value)) {
             fn(this.value);
         }
+
+        return this;
     }
 
     /**
@@ -124,9 +126,7 @@ export class Result<T> {
      */
     static ofError<T>(error: Error) {
         if (valueIsOk(error)) {
-            throw new Error(
-                "Attempted to use Result.ofError, but the given argument was not an Error."
-            );
+            throw new Error("Attempted to use Result.ofError, but the given argument was not an Error.");
         }
 
         return new Result<T>(error);
@@ -149,8 +149,7 @@ export class Result<T> {
                 }
 
                 return new Error(
-                    "Result.ofPromise caught a promise rejection that was neither a string nor an error. Value: " +
-                        e
+                    "Result.ofPromise caught a promise rejection that was neither a string nor an error. Value: " + e
                 );
             })
             .then(r => (r instanceof Error ? Result.ofError<T>(r) : Result.ofValue(r)));
@@ -212,7 +211,7 @@ export class Result<T> {
     /**
      * Returns a curried function that will pass the value to the given @param fn function where it can then be used for work that doesn't return a value. Will only run if the value is Ok.
      */
-    static iter<T>(fn: (arg: T) => void): Curried<T, void> {
+    static iter<T>(fn: (arg: T) => void): Curried<T, Result<T>> {
         return r => r.iter(fn);
     }
 
