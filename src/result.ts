@@ -133,9 +133,13 @@ export class Result<T> {
     }
 
     /**
-     * Wraps the @param error in an Error Result.
+     * Wraps the @param error in an Error Result. If given a @type string value, it will be wrapped in a new @see Error
      */
-    static ofError<T>(error: Error) {
+    static ofError<T>(error: Error | string) {
+        if (typeof error === "string") {
+            return new Result<T>(new Error(error));
+        }
+
         if (valueIsOk(error)) {
             throw new Error("Attempted to use Result.ofError, but the given argument was not an Error.");
         }
