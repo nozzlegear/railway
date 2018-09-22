@@ -200,6 +200,19 @@ describe("Option", () => {
             expect(fn).toBeCalled();
         });
 
+        it("should iter and not have to return an option", () => {
+            // Bugfix for previous signature `iter<T>(fn: (arg: T) => Option<T>): Curried<T, Option<T>>`
+            let called = false;
+            const fn = (arg: string) => {
+                called = true;
+            };
+            const curried = Option.iter<string>(fn);
+
+            curried(Option.ofSome("5"));
+
+            expect(called).toBe(true);
+        });
+
         it("should not iter when Option.isNone", () => {
             const fn = jest.fn();
             const option = Option.ofNone<string>();
