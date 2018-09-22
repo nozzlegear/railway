@@ -33,7 +33,7 @@ export class Async<T> {
      * Binds the value of the promise to the promise returned by the @param mapper function.
      */
     bind<U>(mapper: (arg: T) => Async<U>): Async<U> {
-        return Async.ofPromise(this.value.then(mapper).then(Async.get));
+        return Async.ofPromise<U>(this.value.then(mapper).then(Async.get));
     }
 
     /**
