@@ -20,7 +20,7 @@ export class Result<T> {
     /**
      * Gets the underlying value. Note that you should check whether the value is Ok before doing this, or else a @see WrappedResultError may be thrown.
      */
-    getValue() {
+    getValue(): T {
         if (valueIsError(this.value)) {
             throw new WrappedResultError(
                 `Attempted to get the raw value of a Result, but the value was an Error.`,
@@ -34,7 +34,7 @@ export class Result<T> {
     /**
      * Gets the underlying error. Note that you should check whether the value is Error before doing this, or else a @see WrappedResultError may be thrown.
      */
-    getError() {
+    getError(): unknown {
         if (!valueIsError(this.value)) {
             const type = typeof this.value;
 
@@ -107,7 +107,7 @@ export class Result<T> {
     /**
      * Executes the given @param fn function when the result is Error.
      */
-    iterError(fn: (arg: Error) => void): Result<T> {
+    iterError(fn: (arg: unknown) => void): Result<T> {
         if (valueIsError(this.value)) {
             fn(this.value);
         }
@@ -195,14 +195,14 @@ export class Result<T> {
     /**
      * Gets the underlying value of the Result. Note that you should check whether the value is Ok before doing this, or else a @see WrappedResultError may be thrown.
      */
-    static getValue<T>(result: Result<T>) {
+    static getValue<T>(result: Result<T>): T {
         return result.getValue();
     }
 
     /**
      * Gets the underlying error of the Result. Note that you should check whether the value is Error before doing this, or else a @see WrappedResultError may be thrown.
      */
-    static getError<T>(result: Result<T>) {
+    static getError<T>(result: Result<T>): unknown {
         return result.getError();
     }
 
@@ -251,7 +251,7 @@ export class Result<T> {
     /**
      * Returns a curried function that will execute the given @param fn function when the result is Error.
      */
-    static iterError<T>(fn: (arg: Error) => void): Curried<T, Result<T>> {
+    static iterError<T>(fn: (arg: unknown) => void): Curried<T, Result<T>> {
         return r => r.iterError(fn);
     }
 }

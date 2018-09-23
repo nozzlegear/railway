@@ -7,14 +7,34 @@ describe("result", () => {
 
             expect(Result.isError(result)).toBe(true);
             expect(Result.isOk(result)).toBe(false);
-            expect(result.getError().message).toBe("Test error");
+
+            const error = result.getError();
+            let message: string;
+
+            expect(error).toBeInstanceOf(Error);
+
+            if (error instanceof Error) {
+                message = error.message;
+            }
+
+            expect(message).toBe("Test error");
         });
 
         it("should wrap a string and convert to an Error instance", () => {
             const result = Result.ofError("Test error 2");
 
             expect(Result.isError(result)).toBe(true);
-            expect(result.getError().message).toBe("Test error 2");
+
+            const error = result.getError();
+            let message: string;
+
+            expect(error).toBeInstanceOf(Error);
+
+            if (error instanceof Error) {
+                message = error.message;
+            }
+
+            expect(message).toBe("Test error 2");
         });
     });
 
