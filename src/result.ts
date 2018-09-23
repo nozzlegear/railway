@@ -1,21 +1,25 @@
 type Curried<T, U> = (a: Result<T>) => U;
 
 export class WrappedResultError extends Error {
-    constructor(message: string, public originalError: Error) {
+    constructor(message: string, public originalError: unknown) {
         super(message);
     }
 }
 
-function valueIsError<T>(value: T | Error): value is Error {
-    return value instanceof Error;
+type UnderlyingValue<T> = { type: "value"; value: T };
+type UnderlyingError = { type: "error"; error: unknown };
+type Underlying<T> = UnderlyingValue<T> | UnderlyingError;
+
+function valueIsError<T>(value: Underlying<T>): value is UnderlyingError {
+    return value.type === "error";
 }
 
-function valueIsOk<T>(value: T | Error): value is T {
-    return !valueIsError(value);
+function valueIsOk<T>(value: Underlying<T>): value is UnderlyingValue<T> {
+    return value.type === "value";
 }
 
 export class Result<T> {
-    constructor(private value: T | Error) {}
+    constructor(private value: Underlying<T>) {}
 
     /**
      * Gets the underlying value. Note that you should check whether the value is Ok before doing this, or else a @see WrappedResultError may be thrown.
@@ -24,11 +28,11 @@ export class Result<T> {
         if (valueIsError(this.value)) {
             throw new WrappedResultError(
                 `Attempted to get the raw value of a Result, but the value was an Error.`,
-                this.value
+                this.value.error
             );
         }
 
-        return this.value;
+        return this.value.value;
     }
 
     /**
@@ -36,14 +40,14 @@ export class Result<T> {
      */
     getError(): unknown {
         if (!valueIsError(this.value)) {
-            const type = typeof this.value;
+            const type = typeof this.value.value;
 
             throw new Error(
                 `Attempted to get the Error of a Result, but the value was not an Error. Value type was ${type}.`
             );
         }
 
-        return this.value;
+        return this.value.error;
     }
 
     /**
@@ -65,10 +69,10 @@ export class Result<T> {
      */
     map<U>(mapper: (arg: T) => U): Result<U> {
         if (valueIsOk(this.value)) {
-            return Result.ofValue(mapper(this.value));
+            return Result.ofValue(mapper(this.value.value));
         }
 
-        return Result.ofError(this.value);
+        return Result.ofError(this.value.error);
     }
 
     /**
@@ -76,7 +80,7 @@ export class Result<T> {
      */
     mapError(mapper: (arg: unknown) => T): Result<T> {
         if (valueIsError(this.value)) {
-            return Result.ofValue(mapper(this.value));
+            return Result.ofValue(mapper(this.value.error));
         }
 
         return this;
@@ -87,10 +91,10 @@ export class Result<T> {
      */
     bind<U>(mapper: (arg: T) => Result<U>): Result<U> {
         if (valueIsOk(this.value)) {
-            return mapper(this.value);
+            return mapper(this.value.value);
         }
 
-        return Result.ofError(this.value);
+        return Result.ofError(this.value.error);
     }
 
     /**
@@ -98,7 +102,7 @@ export class Result<T> {
      */
     iter(fn: (arg: T) => void): Result<T> {
         if (valueIsOk(this.value)) {
-            fn(this.value);
+            fn(this.value.value);
         }
 
         return this;
@@ -109,7 +113,7 @@ export class Result<T> {
      */
     iterError(fn: (arg: unknown) => void): Result<T> {
         if (valueIsError(this.value)) {
-            fn(this.value);
+            fn(this.value.error);
         }
 
         return this;
@@ -123,7 +127,7 @@ export class Result<T> {
      */
     defaultValue(defaultValue: T): T {
         if (valueIsOk(this.value)) {
-            return this.value;
+            return this.value.value;
         }
 
         return defaultValue;
@@ -133,29 +137,20 @@ export class Result<T> {
      * Wraps the @param value in an Ok Result.
      */
     static ofValue<T>(value: T) {
-        if (valueIsError(value)) {
-            throw new WrappedResultError(
-                "Attempted to use Result.ofValue, but the given argument was an Error.",
-                value
-            );
-        }
-
-        return new Result<T>(value);
+        return new Result<T>({
+            type: "value",
+            value: value
+        });
     }
 
     /**
-     * Wraps the @param error in an Error Result. If given a @type string value, it will be wrapped in a new @see Error
+     * Wraps the @param error in an Error Result.
      */
-    static ofError<T>(error: Error | string) {
-        if (typeof error === "string") {
-            return new Result<T>(new Error(error));
-        }
-
-        if (valueIsOk(error)) {
-            throw new Error("Attempted to use Result.ofError, but the given argument was not an Error.");
-        }
-
-        return new Result<T>(error);
+    static ofError<T>(error: unknown) {
+        return new Result<T>({
+            type: "error",
+            error: error
+        });
     }
 
     /**
@@ -165,20 +160,23 @@ export class Result<T> {
         const computation: Promise<T> = typeof promise === "function" ? promise() : promise;
 
         return computation
-            .catch(e => {
-                if (typeof e === "string") {
-                    return new Error(e);
-                }
+            .then(x => {
+                const value: UnderlyingValue<T> = {
+                    type: "value",
+                    value: x
+                };
 
-                if (e instanceof Error) {
-                    return e;
-                }
-
-                return new Error(
-                    "Result.ofPromise caught a promise rejection that was neither a string nor an error. Value: " + e
-                );
+                return value;
             })
-            .then(r => (r instanceof Error ? Result.ofError<T>(r) : Result.ofValue(r)));
+            .catch(e => {
+                const error: UnderlyingError = {
+                    type: "error",
+                    error: e
+                };
+
+                return error;
+            })
+            .then(r => (valueIsError(r) ? Result.ofError<T>(r.error) : Result.ofValue<T>(r.value)));
     }
 
     /**

@@ -20,21 +20,31 @@ describe("result", () => {
             expect(message).toBe("Test error");
         });
 
-        it("should wrap a string and convert to an Error instance", () => {
+        it("should wrap a string", () => {
             const result = Result.ofError("Test error 2");
 
             expect(Result.isError(result)).toBe(true);
 
             const error = result.getError();
-            let message: string;
 
-            expect(error).toBeInstanceOf(Error);
+            expect(typeof error).toBe("string");
+            expect(error).toBe("Test error 2");
+        });
 
-            if (error instanceof Error) {
-                message = error.message;
-            }
+        it("should wrap an object", () => {
+            const input = {
+                hello: "world",
+                foo: true
+            };
+            const result = Result.ofError(input);
 
-            expect(message).toBe("Test error 2");
+            expect(Result.isError(result)).toBe(true);
+
+            const error = result.getError() as typeof input;
+
+            expect(typeof error).toBe("object");
+            expect(error.hello).toBe("world");
+            expect(error.foo).toBe(true);
         });
     });
 
@@ -148,7 +158,8 @@ describe("result", () => {
         });
 
         it("Should wrap a function that returns an error promise", async () => {
-            const generatePromise = () => new Promise(rej => setTimeout(() => rej(new Error("Test Error")), 1000));
+            const generatePromise = () =>
+                new Promise((res, rej) => setTimeout(() => rej(new Error("Test Error")), 1000));
             const result = await Result.ofPromise(generatePromise);
 
             expect(Result.isError(result)).toBe(true);

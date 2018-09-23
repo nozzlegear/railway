@@ -38,7 +38,7 @@ describe("AsyncResult", () => {
 
             expect(result).toBeInstanceOf(Result);
             expect(result.isError()).toBe(true);
-            expect(result.getError()).toBeInstanceOf(Error);
+            expect(result.getError()).toBe("Test error");
         });
 
         it("should wrap a Promise value", async () => {
@@ -112,7 +112,7 @@ describe("AsyncResult", () => {
             expect(fn).not.toBeCalled();
             expect(result).toBeInstanceOf(Result);
             expect(result.isError()).toBe(true);
-            expect(result.getError()).toBeInstanceOf(Error);
+            expect(result.getError()).toBe("Test error");
         });
 
         it("should catch an error thrown and convert it to Result.error", async () => {
@@ -125,7 +125,10 @@ describe("AsyncResult", () => {
 
             expect(mocked).toBeCalled();
             expect(result.isError()).toBe(true);
-            expect(result.getError().message).toBe("Test error");
+
+            const error = result.getError() as Error;
+            expect(error).toBeInstanceOf(Error);
+            expect(error.message).toBe("Test error");
         });
     });
 
@@ -159,7 +162,10 @@ describe("AsyncResult", () => {
 
             expect(mocked).toBeCalled();
             expect(result.isError()).toBe(true);
-            expect(result.getError().message).toBe("Test error");
+
+            const error = result.getError() as Error;
+            expect(error).toBeInstanceOf(Error);
+            expect(error.message).toBe("Test error");
         });
     });
 
@@ -206,7 +212,10 @@ describe("AsyncResult", () => {
 
             expect(mocked).toBeCalled();
             expect(result.isError()).toBe(true);
-            expect(result.getError().message).toBe("Test error");
+
+            const error = result.getError() as Error;
+            expect(error).toBeInstanceOf(Error);
+            expect(error.message).toBe("Test error");
         });
     });
 
@@ -252,7 +261,10 @@ describe("AsyncResult", () => {
 
             expect(mocked).toBeCalled();
             expect(result.isError()).toBe(true);
-            expect(result.getError().message).toBe("Test error");
+
+            const error = result.getError() as Error;
+            expect(error).toBeInstanceOf(Error);
+            expect(error.message).toBe("Test error");
         });
     });
 
@@ -321,7 +333,10 @@ describe("AsyncResult", () => {
 
             expect(mocked).toBeCalled();
             expect(result.isError()).toBe(true);
-            expect(result.getError().message).toBe("Test error 1");
+
+            const error = result.getError() as string;
+            expect(typeof error).toBe("string");
+            expect(error).toBe("Test error 1");
         });
     });
 
