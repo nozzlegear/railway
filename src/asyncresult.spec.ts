@@ -114,6 +114,19 @@ describe("AsyncResult", () => {
             expect(result.isError()).toBe(true);
             expect(result.getError()).toBeInstanceOf(Error);
         });
+
+        it("should catch an error thrown and convert it to Result.error", async () => {
+            const mocked = jest.fn(_ => {
+                throw new Error("Test error");
+            });
+            const result = await AsyncResult.wrap("5")
+                .map<number>(mocked)
+                .get();
+
+            expect(mocked).toBeCalled();
+            expect(result.isError()).toBe(true);
+            expect(result.getError().message).toBe("Test error");
+        });
     });
 
     describe(".mapError", () => {
@@ -134,6 +147,19 @@ describe("AsyncResult", () => {
 
             expect(fn).not.toBeCalled();
             expect(result.isOk()).toBe(true);
+        });
+
+        it("should catch an error thrown and convert it to Result.error", async () => {
+            const mocked = jest.fn(_ => {
+                throw new Error("Test error");
+            });
+            const result = await AsyncResult.wrap(Result.ofError("Test error 2"))
+                .mapError(mocked)
+                .get();
+
+            expect(mocked).toBeCalled();
+            expect(result.isError()).toBe(true);
+            expect(result.getError().message).toBe("Test error");
         });
     });
 
@@ -169,6 +195,19 @@ describe("AsyncResult", () => {
             expect(fn).toBeCalledWith("5");
             expect(result.isError()).toBe(true);
         });
+
+        it("should catch an error thrown and convert it to Result.error", async () => {
+            const mocked = jest.fn(_ => {
+                throw new Error("Test error");
+            });
+            const result = await AsyncResult.wrap("5")
+                .bind<number>(mocked)
+                .get();
+
+            expect(mocked).toBeCalled();
+            expect(result.isError()).toBe(true);
+            expect(result.getError().message).toBe("Test error");
+        });
     });
 
     describe(".bindError", () => {
@@ -202,6 +241,19 @@ describe("AsyncResult", () => {
             expect(fn).toBeCalled();
             expect(result.isError()).toBe(true);
         });
+
+        it("should catch an error thrown and convert it to Result.error", async () => {
+            const mocked = jest.fn(_ => {
+                throw new Error("Test error");
+            });
+            const result = await AsyncResult.wrap(Result.ofError("Test error 2"))
+                .bindError(mocked)
+                .get();
+
+            expect(mocked).toBeCalled();
+            expect(result.isError()).toBe(true);
+            expect(result.getError().message).toBe("Test error");
+        });
     });
 
     describe(".iter", () => {
@@ -223,6 +275,18 @@ describe("AsyncResult", () => {
 
             expect(fn).not.toBeCalled();
             expect(result.isError()).toBe(true);
+        });
+
+        it("should catch an error thrown but NOT convert the monad to an Error", async () => {
+            const mocked = jest.fn(_ => {
+                throw new Error("Test error 2");
+            });
+            const result = await AsyncResult.wrap(5)
+                .iter(mocked)
+                .get();
+
+            expect(mocked).toBeCalled();
+            expect(result.isOk()).toBe(true);
         });
     });
 
@@ -246,22 +310,19 @@ describe("AsyncResult", () => {
             expect(fn).not.toBeCalled();
             expect(result.isOk()).toBe(true);
         });
-    });
 
-    describe(".catch", () => {
-        it("should catch an error from anywhere in the chain", async () => {
-            // const result = await AsyncResult.wrap("parseInt")
-            //     .map(parseInt)
-            //     .map<number>(arg => {
-            //         throw new Error("Test error");
-            //     })
-            //     .map(arg => arg + 5);
-            //     .catch()
-            //     .get()
-            // expect(result.isError()).toBe(true);
+        it("should catch an error thrown but NOT bind to the thrown error", async () => {
+            const mocked = jest.fn(_ => {
+                throw new Error("Test error 2");
+            });
+            const result = await AsyncResult.wrap(Result.ofError("Test error 1"))
+                .iterError(mocked)
+                .get();
+
+            expect(mocked).toBeCalled();
+            expect(result.isError()).toBe(true);
+            expect(result.getError().message).toBe("Test error 1");
         });
-
-        it("should throw an error if catch is not used and an error occurs anywhere in the chain", async () => {});
     });
 
     describe("chaining and currying", () => {
