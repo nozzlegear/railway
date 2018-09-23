@@ -98,6 +98,17 @@ export class Result<T> {
     }
 
     /**
+     * Binds the result to the one returned by the @param mapper function. Will only run if the value is Error.
+     */
+    bindError(mapper: (error: unknown) => Result<T>): Result<T> {
+        if (valueIsError(this.value)) {
+            return mapper(this.value.error);
+        }
+
+        return Result.ofValue(this.value.value);
+    }
+
+    /**
      * Passes the value to the given @param fn function where it can then be used for work that doesn't return a value. Will only run if the value is Ok.
      */
     iter(fn: (arg: T) => void): Result<T> {
@@ -237,6 +248,13 @@ export class Result<T> {
      */
     static bind<T, U>(mapper: (arg: T) => Result<U>): Curried<T, Result<U>> {
         return r => r.bind(mapper);
+    }
+
+    /**
+     * Returns a curried function that will bind the result to the one returned by the @param mapper function. Will only run if the value is Error.
+     */
+    static bindError<T>(mapper: (arg: unknown) => Result<T>): Curried<T, Result<T>> {
+        return r => r.bindError(mapper);
     }
 
     /**

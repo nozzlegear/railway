@@ -203,6 +203,55 @@ describe("result", () => {
         });
     });
 
+    describe(".bind", () => {
+        it("should bind an OK result to an OK result", () => {
+            const result = Result.ofValue("5")
+                .bind(arg => Result.ofValue(parseInt(arg)))
+                .getValue();
+
+            expect(result).toBe(5);
+        });
+
+        it("should bind an OK result to an Error result", () => {
+            const result = Result.ofValue("test").bind(arg => Result.ofError("parseint failed"));
+
+            expect(result.isError()).toBe(true);
+            expect(result.getError()).toBe("parseint failed");
+        });
+
+        it("should not bind an Error result at all", () => {
+            const fn = jest.fn();
+            const result = Result.ofError("Test error").bind(fn);
+
+            expect(fn).not.toBeCalled();
+            expect(result.isError()).toBe(true);
+        });
+    });
+
+    describe(".bindError", () => {
+        it("should bind an Error result to an OK result", () => {
+            const result = Result.ofError("Test error").bindError(_ => Result.ofValue(5));
+
+            expect(result.isOk()).toBe(true);
+            expect(result.getValue()).toBe(5);
+        });
+
+        it("should bind an Error result to an Error result", () => {
+            const result = Result.ofError("Test error").bindError(_ => Result.ofError("Test error 2"));
+
+            expect(result.isError()).toBe(true);
+            expect(result.getError()).toBe("Test error 2");
+        });
+
+        it("should not bind an OK result at all", () => {
+            const fn = jest.fn();
+            const result = Result.ofValue(5).bindError(fn);
+
+            expect(fn).not.toBeCalled();
+            expect(result.isOk()).toBe(true);
+        });
+    });
+
     describe(".defaultValue", () => {
         it("should return original value when ok", () => {
             const input = Result.ofValue("Hello world");
