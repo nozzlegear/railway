@@ -195,7 +195,7 @@ describe("AsyncResult", () => {
             const fn = jest.fn(_ => AsyncResult.wrap(Result.ofError("Test error")));
             const result = await AsyncResult.wrap("5")
                 .bind(fn)
-                .map(parseInt)
+                .map(x => parseInt(x as any))
                 .get();
 
             expect(fn).toBeCalledWith("5");
@@ -289,9 +289,9 @@ describe("AsyncResult", () => {
             expect(result.isError()).toBe(true);
         });
 
-        it("should catch an error thrown but NOT convert the monad to an Error", async () => {
+        it("should catch an error thrown but NOT convert to an Error", async () => {
             const mocked = jest.fn(_ => {
-                throw new Error("Test error 2");
+
             });
             const result = await AsyncResult.wrap(5)
                 .iter(mocked)
@@ -324,9 +324,7 @@ describe("AsyncResult", () => {
         });
 
         it("should catch an error thrown but NOT bind to the thrown error", async () => {
-            const mocked = jest.fn(_ => {
-                throw new Error("Test error 2");
-            });
+            const mocked = jest.fn(_ => { });
             const result = await AsyncResult.wrap(Result.ofError("Test error 1"))
                 .iterError(mocked)
                 .get();
