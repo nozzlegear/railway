@@ -1,7 +1,7 @@
 type Curried<T, U> = (a: Result<T>) => U;
 
 export class WrappedResultError extends Error {
-    constructor(message: string, public originalError: unknown) {
+    constructor(message: string, public originalError: any) {
         super(message);
     }
 }
@@ -38,7 +38,7 @@ export class Result<T> {
     /**
      * Gets the underlying error. Note that you should check whether the value is Error before doing this, or else a @see WrappedResultError may be thrown.
      */
-    getError(): unknown {
+    getError(): any {
         if (!valueIsError(this.value)) {
             const type = typeof this.value.value;
 
@@ -100,7 +100,7 @@ export class Result<T> {
     /**
      * Binds the result to the one returned by the @param mapper function. Will only run if the value is Error.
      */
-    bindError(mapper: (error: unknown) => Result<T>): Result<T> {
+    bindError(mapper: (error: any) => Result<T>): Result<T> {
         if (valueIsError(this.value)) {
             return mapper(this.value.error);
         }
@@ -122,7 +122,7 @@ export class Result<T> {
     /**
      * Executes the given @param fn function when the result is Error.
      */
-    iterError(fn: (arg: unknown) => void): Result<T> {
+    iterError(fn: (arg: any) => void): Result<T> {
         if (valueIsError(this.value)) {
             fn(this.value.error);
         }
@@ -157,7 +157,7 @@ export class Result<T> {
     /**
      * Wraps the @param error in an Error Result.
      */
-    static ofError<T>(error: unknown) {
+    static ofError<T = any>(error: any) {
         return new Result<T>({
             type: "error",
             error: error
@@ -211,7 +211,7 @@ export class Result<T> {
     /**
      * Gets the underlying error of the Result. Note that you should check whether the value is Error before doing this, or else a @see WrappedResultError may be thrown.
      */
-    static getError<T>(result: Result<T>): unknown {
+    static getError<T>(result: Result<T>): any {
         return result.getError();
     }
 
@@ -239,7 +239,7 @@ export class Result<T> {
     /**
      * Returns a curried function that will map the Error value back to an OK value. Will only run if the value is Error.
      */
-    static mapError<T>(mapper: (arg: unknown) => T): Curried<T, Result<T>> {
+    static mapError<T>(mapper: (arg: any) => T): Curried<T, Result<T>> {
         return r => r.mapError(mapper);
     }
 
@@ -253,7 +253,7 @@ export class Result<T> {
     /**
      * Returns a curried function that will bind the result to the one returned by the @param mapper function. Will only run if the value is Error.
      */
-    static bindError<T>(mapper: (arg: unknown) => Result<T>): Curried<T, Result<T>> {
+    static bindError<T>(mapper: (arg: any) => Result<T>): Curried<T, Result<T>> {
         return r => r.bindError(mapper);
     }
 
@@ -267,7 +267,7 @@ export class Result<T> {
     /**
      * Returns a curried function that will execute the given @param fn function when the result is Error.
      */
-    static iterError<T>(fn: (arg: unknown) => void): Curried<T, Result<T>> {
+    static iterError<T>(fn: (arg: any) => void): Curried<T, Result<T>> {
         return r => r.iterError(fn);
     }
 }

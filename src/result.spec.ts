@@ -9,7 +9,7 @@ describe("result", () => {
             expect(Result.isOk(result)).toBe(false);
 
             const error = result.getError();
-            let message: string;
+            let message: string | undefined;
 
             expect(error).toBeInstanceOf(Error);
 
