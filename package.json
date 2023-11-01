@@ -3,6 +3,7 @@
     "version": "2.0.0",
     "description": "Functional helpers, heavily inspired by F#, to help facilitate \"railway oriented\" programming.",
     "main": "lib/index.js",
+    "type": "module",
     "typings": "lib/index.d.ts",
     "repository": "https://github.com/nozzlegear/railway",
     "author": "Joshua Harms <joshua@nozzlegear.com>",

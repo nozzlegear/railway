@@ -1,8 +1,7 @@
 {
     "compilerOptions": {
-        "target": "es5",
-        "module": "commonjs",
-        "lib": ["es2015.promise", "es5", "dom"],
+        "target": "es6",
+        "module": "es6",
         "declaration": true,
         "sourceMap": true,
         "downlevelIteration": true,
