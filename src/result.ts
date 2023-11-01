@@ -7,7 +7,7 @@ export class WrappedResultError extends Error {
 }
 
 type UnderlyingValue<T> = { type: "value"; value: T };
-type UnderlyingError = { type: "error"; error: unknown };
+type UnderlyingError = { type: "error"; error: any };
 type Underlying<T> = UnderlyingValue<T> | UnderlyingError;
 
 function valueIsError<T>(value: Underlying<T>): value is UnderlyingError {
@@ -78,7 +78,7 @@ export class Result<T> {
     /**
      * Maps the Error value back to an OK value. Will only run if the value is Error.
      */
-    mapError(mapper: (arg: unknown) => T): Result<T> {
+    mapError<U>(mapper: (arg: U) => T): Result<T> {
         if (valueIsError(this.value)) {
             return Result.ofValue(mapper(this.value.error));
         }

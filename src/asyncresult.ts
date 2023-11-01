@@ -22,7 +22,7 @@ export class AsyncResult<T> {
     /**
      * Maps the Error value back to an OK value. Will only run if the value is Error.
      */
-    mapError(fn: (arg: unknown) => T): AsyncResult<T> {
+    mapError(fn: (arg: any) => T): AsyncResult<T> {
         return AsyncResult.wrap(this.get().then(Result.mapError(fn)));
     }
 
@@ -48,7 +48,7 @@ export class AsyncResult<T> {
     /**
      * Binds the Error value to the AsyncReuslt returned by the @param fn function. Will only run if the value is Error.
      */
-    bindError(fn: (arg: unknown) => AsyncResult<T>): AsyncResult<T> {
+    bindError(fn: (arg: any) => AsyncResult<T>): AsyncResult<T> {
         return AsyncResult.wrap(
             this.get()
                 .then(async result => {
@@ -74,7 +74,7 @@ export class AsyncResult<T> {
     /**
      * Passes the Error value to the given @param fn function. Will only run if the value is Error.
      */
-    iterError(fn: (arg: unknown) => void): AsyncResult<T> {
+    iterError(fn: (arg: any) => void): AsyncResult<T> {
         this.get().then(Result.iterError(fn));
 
         return this;
@@ -116,7 +116,7 @@ export class AsyncResult<T> {
     /**
      * Returns a curried function that will map the Error value back to an OK value. Will only run if the value is Error.
      */
-    static mapError<T>(fn: (arg: unknown) => T): Curried<T, AsyncResult<T>> {
+    static mapError<T>(fn: (arg: any) => T): Curried<T, AsyncResult<T>> {
         return a => a.mapError(fn);
     }
 
@@ -128,9 +128,9 @@ export class AsyncResult<T> {
     }
 
     /**
-     * Returns a curried function that will bind the Error value to the AsyncReuslt returned by the @param fn function. Will only run if the value is Error.
+     * Returns a curried function that will bind the Error value to the AsyncResult returned by the @param fn function. Will only run if the value is Error.
      */
-    static bindError<T>(fn: (arg: unknown) => AsyncResult<T>): Curried<T, AsyncResult<T>> {
+    static bindError<T>(fn: (arg: any) => AsyncResult<T>): Curried<T, AsyncResult<T>> {
         return a => a.bindError(fn);
     }
 
@@ -144,7 +144,7 @@ export class AsyncResult<T> {
     /**
      * Returns a curried function that will pass the Error value to the given @param fn function. Will only run if the value is Error.
      */
-    static iterError<T>(fn: (arg: unknown) => void): Curried<T, AsyncResult<T>> {
+    static iterError<T>(fn: (arg: any) => void): Curried<T, AsyncResult<T>> {
         return a => a.iterError(fn);
     }
 }
