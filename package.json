@@ -1,11 +1,21 @@
 {
     "name": "@nozzlegear/railway",
     "version": "3.1.0",
-    "main": "lib/cjs/index.js",
-    "module": "lib/esm/index.js",
     "type": "module",
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        "require": {
+            "types": "./dist/index.d.cts",
+            "default": "./dist/index.cjs"
+        },
+        "import": {
+            "types": "./dist/index.d.ts",
+            "default": "./dist/index.js"
+        }
+    },
     "description": "Functional helpers, heavily inspired by F#, to help facilitate \"railway oriented\" programming.",
-    "typings": "lib/index.d.ts",
     "repository": "https://github.com/nozzlegear/railway",
     "author": "Joshua Harms <joshua@nozzlegear.com>",
     "license": "MIT",
@@ -15,18 +25,17 @@
         "barrelsby": "^2.8.1",
         "jest": "^29.7.0",
         "ts-jest": "^29.1.1",
+        "tsup": "^7.2.0",
         "typescript": "5.2.2"
     },
     "scripts": {
         "barrel": "barrelsby -e \".*\\.spec\\.(t|j)sx?$\" -d ./src --delete",
-        "build:cjs": "tsc -p tsconfig.cjs.json",
-        "build:esm": "tsc -p tsconfig.esm.json",
-        "build": "yarn barrel && yarn run build:cjs && yarn run build:esm",
+        "build": "yarn barrel && tsup src/index.ts --format cjs,esm --dts --clean",
         "test": "yarn jest",
         "prepublishOnly": "yarn build && yarn test"
     },
     "files": [
-        "lib",
+        "dist",
         "README.md"
     ],
     "jest": {
