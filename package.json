@@ -19,7 +19,9 @@
     },
     "scripts": {
         "barrel": "barrelsby -e \".*\\.spec\\.(t|j)sx?$\" -d ./src --delete",
-        "build": "yarn barrel && tsc -p .",
+        "build:cjs": "tsc -p tsconfig.cjs.json",
+        "build:esm": "tsc -p tsconfig.esm.json",
+        "build": "yarn barrel && yarn run build:cjs && yarn run build:esm",
         "test": "yarn jest",
         "prepublishOnly": "yarn build && yarn test"
     },
