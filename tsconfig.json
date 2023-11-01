@@ -1,16 +1,13 @@
 {
-    "compilerOptions": {
-        "target": "es6",
-        "module": "es6",
-        "declaration": true,
-        "sourceMap": true,
-        "downlevelIteration": true,
-        "strict": true /* Enable all strict type-checking options. */,
-        "noImplicitReturns": true,
-        "noFallthroughCasesInSwitch": true,
-        "esModuleInterop": true,
-        "outDir": "./lib"
-    },
-    "include": ["src"],
-    "exclude": ["src/**/*.spec.ts"]
+  "compilerOptions": {
+    "target": "es6",
+    "declaration": true,
+    "sourceMap": true,
+    "strict": true /* Enable all strict type-checking options. */,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src"],
+  "exclude": ["src/**/*.spec.ts"]
 }
