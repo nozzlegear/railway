@@ -1,4 +1,4 @@
-import { Result, compute } from "./";
+import { Result, compute } from "./index";
 
 describe("result", () => {
     describe(".ofError", () => {
