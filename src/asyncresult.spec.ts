@@ -1,4 +1,4 @@
-import { AsyncResult, Result, pipe } from ".";
+import { AsyncResult, Result, pipe } from "./index";
 
 describe("AsyncResult", () => {
     describe(".wrap", () => {
@@ -359,11 +359,11 @@ describe("AsyncResult", () => {
         });
 
         it("should chain and curry an Error value through a pipe", async () => {
-            const bindFn: (arg: unknown) => AsyncResult<unknown> = jest.fn(_ =>
+            const bindFn: (arg: any) => AsyncResult<any> = jest.fn(_ =>
                 AsyncResult.wrap(Result.ofError("Test error 2"))
             );
-            const iterFn: (arg: unknown) => void = jest.fn();
-            const mapFn: (arg: unknown) => number = jest.fn(_ => 5);
+            const iterFn: (arg: any) => void = jest.fn();
+            const mapFn: (arg: any) => number = jest.fn(_ => 5);
             const result = await pipe(Result.ofError("Test error"))
                 .chain(AsyncResult.wrap)
                 .chain(AsyncResult.bindError(bindFn))
