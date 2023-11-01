@@ -1,4 +1,4 @@
-import { Result } from ".";
+import { Result } from "./result";
 
 type Curried<T, U> = (a: AsyncResult<T>) => U;
 
